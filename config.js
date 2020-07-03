@@ -38,26 +38,7 @@ const config = {
   },
 };
 
-// const query = window.location.search;
-// const params = new URLSearchParams(query);
-// const network = params.get('network');
 exports.getConfig = function () {
-  // switch (network) {
-  // case 'rinkeby':
-  //   return config.rinkeby;
-  // case 'development':
-  //   return config.development;
-  // default:
-  //   return config.rinkeby;
-  // }
+  
   return config.rinkeby;
-}
-
-exports.getLink = function(type) {
-  // TODO: migrate to config/default.json
-  if (type === 'use') {
-    return 'https://docs.tokamak.network/';
-  } else if (type === 'register') {
-    return 'https://docs.tokamak.network/';
-  }
 }
