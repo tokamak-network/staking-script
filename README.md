@@ -7,7 +7,7 @@ npm install
 ```
 ### 2. get Infura tokens
 
-### 3. replace "<insert new mnemonic>" to valid mnemonic at app.js:56
+### 3. replace "insert new mnemonic" to valid mnemonic at app.js:56
 ```
 const mnemonic = "<insert new mnemonic>"; -> const mnemonic = "<your mnemonic>";
 ```
@@ -17,17 +17,21 @@ const mnemonic = "<insert new mnemonic>"; -> const mnemonic = "<your mnemonic>";
 new HDWalletProvider(mnemonic, providerUrl, 2); -> new HDWalletProvider(mnemonic, providerUrl, <your-account-index>);
 ```
 
+### 5. run scipt
+To run script, you should change --provider-url to your infura url. You can test stake/unstake at rinkeby.
 
-### commit
+#### commit
 ```
-node app.js -f commit --provider-url https://rinkeby.infura.io/v3/***
+node app.js --provider-url https://rinkeby.infura.io/v3/*** -f commit
 ```
-### stake
+#### stake
+stake 1 TON
 ```
 node app.js --provider-url https://rinkeby.infura.io/v3/*** -f approveAndCall -p 1000000000000000000
 ```
 
-### unstake
+#### unstake
+unstake 1 TON
 ```
 node app.js --provider-url https://rinkeby.infura.io/v3/*** -f requestWithdrawal -p 1000000000000000000
 ```
