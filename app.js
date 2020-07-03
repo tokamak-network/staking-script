@@ -53,7 +53,6 @@ async function main() {
   const providerUrl = infura ? getInfuraProviderUrl(networkId, infuraAccessToken) : (program.providerUrl || defaultProviderUrl);
 
   const logger = Logger(verbose);
-  // const mnemonic = getMnemonic();
   const mnemonic = "<insert new mnemonic>";
   const { web3, from } = loadWeb3FromMnemonic(providerUrl, mnemonic);
 
