@@ -1,8 +1,5 @@
 const config = {
   'mainnet': {
-    'baseURL': 'https://dashboard-api.tokamak.network',
-    'prefixTransactionHash': 'https://etherscan.io/tx/',
-    'prefixAddress': 'https://etherscan.io/address/',
     'network': '1',
     'contractAddress': {
       'rootchain': '',
@@ -14,9 +11,6 @@ const config = {
     },
   },
   'rinkeby': {
-    'baseURL': 'https://dashboard-api.tokamak.network/rinkeby',
-    'prefixTransactionHash': 'https://rinkeby.etherscan.io/tx/',
-    'prefixAddress': 'https://rinkeby.etherscan.io/address/',
     'network': '4',
     'contractAddress': {
       'rootchain': '0xfe40ecbd972675d3d6766d94d04373bf9d8896b6',
@@ -29,12 +23,6 @@ const config = {
         "PowerTON":"0x4cc9b4cf3a4a6f8e7cadf8fcd442873c3f71ab73"
       },
     },
-  },
-  'development': {
-    'baseURL': 'http://127.0.0.1:9002',
-    'prefixTransactionHash': 'https://rinkeby.etherscan.io/tx/',
-    'prefixAddress': 'https://rinkeby.etherscan.io/address/',
-    'network': '1337',
   },
 };
 
