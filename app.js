@@ -51,7 +51,7 @@ async function main() {
   const providerUrl = infura ? getInfuraProviderUrl(networkId, infuraAccessToken) : (program.providerUrl || defaultProviderUrl);
 
   const logger = Logger(verbose);
-  const privatekey = "<inser private key>";
+  const privatekey = "<insert private key>";
   const { web3, from } = loadWeb3FromMnemonic(providerUrl, privatekey);
 
   logger("network id", networkId);
