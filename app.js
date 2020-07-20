@@ -2,7 +2,7 @@ const promisify = require("util").promisify;
 const Web3 = require("web3");
 const { sprintf } = require("sprintf-js");
 const program = require("commander");
-const HDWalletProvider = require("truffle-hdwallet-provider");
+const PrivateKeyProvider = require("truffle-privatekey-provider");
 const { loadTruffleContract } = require("./lib/utils");
 const { getConfig } = require('./config.js');
 const { padLeft, BN } = require('web3-utils');
@@ -14,8 +14,6 @@ const defaultWeiAmount = 0;
 const defaultGasLimit = 4500000;
 const defaultGasPrice = 20e9;
 const defaultNonce = null;
-const infuraMainnetUrl = "https://mainnet.infura.io";
-const infuraRinkebyUrl = "https://rinkeby.infura.io";
 
 program
   .option("-f, --function-name [value]", "required. function to call")
@@ -53,8 +51,8 @@ async function main() {
   const providerUrl = infura ? getInfuraProviderUrl(networkId, infuraAccessToken) : (program.providerUrl || defaultProviderUrl);
 
   const logger = Logger(verbose);
-  const mnemonic = "<insert new mnemonic>";
-  const { web3, from } = loadWeb3FromMnemonic(providerUrl, mnemonic);
+  const privatekey = "<inser private key>";
+  const { web3, from } = loadWeb3FromMnemonic(providerUrl, privatekey);
 
   logger("network id", networkId);
   logger("provider url", providerUrl);
@@ -198,11 +196,11 @@ function loadContract(web3, contractName, contractAddress) {
   throw new Error(`Unspecified contract name ${ contractName }`);
 }
 
-function loadWeb3FromMnemonic(providerUrl, mnemonic) {
+function loadWeb3FromMnemonic(providerUrl, privatekey) {
   const web3 = new Web3();
-  const provider = new HDWalletProvider(mnemonic, providerUrl, 2);
+  const provider = new PrivateKeyProvider(privatekey, providerUrl);
   web3.setProvider(provider);
 
-  const from = provider.addresses[ 0 ];
+  const from = provider.address;
   return { web3, from };
 }

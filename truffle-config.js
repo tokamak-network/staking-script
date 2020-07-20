@@ -4,16 +4,6 @@ require("babel-polyfill");
 const HDWalletProvider = require("truffle-hdwallet-provider");
 require("dotenv").config();
 
-const mnemonic = process.env.MNEMONIC || "token onther token onther token onther token onther token onther token onther";
-
-const rinkebyProviderUrl = "https://rinkeby.infura.io/v3/***";
-const mainnetProviderUrl = "https://mainnet.infura.io/v3/***";
-// const rinkebyProviderUrl = "https://rinkeby.infura.io";
-// const mainnetProviderUrl = "https://api.myetherapi.com/eth";
-
-const providerRinkeby = () => new HDWalletProvider(mnemonic, rinkebyProviderUrl, 0, 50);
-const providerMainnet = () => new HDWalletProvider(mnemonic, mainnetProviderUrl, 0, 50);
-
 module.exports = {
   networks: {
     development: {
