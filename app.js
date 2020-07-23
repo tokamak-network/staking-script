@@ -183,7 +183,7 @@ async function main() {
       console.log("No withdrawable request exist!");
       process.exit(1);
     }
-    console.log("Number of withdrawable requests is 2")
+    // console.log("Number of withdrawable requests is 2")
 
     if (nonce) {
       txObject.nonce = nonce;
