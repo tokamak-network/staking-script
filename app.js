@@ -6,6 +6,7 @@ const PrivateKeyProvider = require("truffle-privatekey-provider");
 const { loadTruffleContract } = require("./lib/utils");
 const { getConfig } = require('./config.js');
 const { padLeft, BN } = require('web3-utils');
+const { range } = require('lodash');
 
 // network parameters
 const defaultParameters = [];
@@ -27,6 +28,7 @@ program
   .option("-P, --gas-price [value]", `gas price for transaction. default ${ defaultGasPrice }`)
   .option("-N, --nonce [value]", `nonce for transaction. default ${ defaultNonce }`)
   .option("-v, --verbose", "show debug logging")
+  .option("-k, --pk [value]", "required. transaction sender.")
   .parse(process.argv);
 
 require("dotenv").config();
@@ -43,16 +45,17 @@ async function main() {
     weiAmount = defaultWeiAmount,
     parameters,
     verbose = false,
+    pk,
   } = program;
 
   if (!functionName) throw new Error("Function name must be specified.");
   if (infura && !networkId) throw new Error("Network identifier must be specified to use infura.");
+  if (!pk) throw new Error("Private key must be specified.");
 
   const providerUrl = infura ? getInfuraProviderUrl(networkId, infuraAccessToken) : (program.providerUrl || defaultProviderUrl);
 
   const logger = Logger(verbose);
-  const privatekey = "<insert private key>";
-  const { web3, from } = loadWeb3FromMnemonic(providerUrl, privatekey);
+  const { web3, from } = loadWeb3FromMnemonic(providerUrl, pk);
 
   logger("network id", networkId);
   logger("provider url", providerUrl);
@@ -63,6 +66,7 @@ async function main() {
   logger("gas limit", gasLimit);
   logger("gas price", gasPrice);
   logger("nonce", nonce);
+  logger("private key", pk);
 
   if (functionName === 'approveAndCall') {
     const contractAddress = getConfig().contractAddress.managers.TON;
@@ -81,7 +85,7 @@ async function main() {
     }
     const param = new BN(parameters[0]).toString();
 
-    return contract[ functionName ](...[ wton, param, getData(),
+    await contract[ functionName ](...[ wton, param, getData(),
       txObject ]).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
@@ -101,7 +105,7 @@ async function main() {
     }
     const param = new BN(parameters[0]).toString();
 
-    return contract[ functionName ](...[ rootchain, param,
+    await contract[ functionName ](...[ rootchain, param,
       txObject ]).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
@@ -122,10 +126,73 @@ async function main() {
     const pos2 = makePos(startBlockNumber, endBlockNumber);
     const dummyBytes = '0xdb431b544b2f5468e3f771d7843d9c5df3b4edcf8bc1c599f18f0b4ea8709bc3';
 
-    return contract.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes, {from: from, value: costNRB}).then(JSON.stringify)
+    await contract.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes, {from: from, value: costNRB}).then(JSON.stringify)
     .then(console.log)
     .catch(console.error);
+  } else if (functionName == 'redepositMulti') {
+    const contractAddress = getConfig().contractAddress.managers.DepositManager;
+    const contract = await loadContract(web3, 'DepositManager', contractAddress);
+    const rootchain = await getConfig().contractAddress.rootchain;
+    const txObject = {
+      from,
+      value: weiAmount,
+      gas: gasLimit,
+      gasPrice,
+    };
+
+    const numPendingRequests = await contract[ 'numPendingRequests' ](...[ rootchain, from] );
+    const num = new BN(numPendingRequests.toString())
+
+    if (nonce) {
+      txObject.nonce = nonce;
+    }
+
+    await contract[ functionName ](...[ rootchain, num.words[0],
+      txObject ]).then(JSON.stringify)
+      .then(console.log)
+      .catch(console.error);
+  } else if (functionName == 'processRequests') {
+    const contractAddress = getConfig().contractAddress.managers.DepositManager;
+    const contract = await loadContract(web3, 'DepositManager', contractAddress);
+    const rootchain = await getConfig().contractAddress.rootchain;
+    const txObject = {
+      from,
+      value: weiAmount,
+      gas: gasLimit,
+      gasPrice,
+    };
+    const numPendingRequests = await contract.numPendingRequests(rootchain, from)
+
+    let requestIndex = await contract.withdrawalRequestIndex(rootchain, from);
+    const pendingRequests = [];
+    for (const _ of range(numPendingRequests)) {
+      pendingRequests.push(contract.withdrawalRequest(rootchain, from, requestIndex));
+      requestIndex++;
+    }
+    const requests = await Promise.all(pendingRequests);
+
+    const blockNumber = await web3.eth.getBlockNumber();
+    let num = 0;
+    for (let i=0;i<requests.length;i++){
+      if (requests[i].withdrawableBlockNumber.words[0] <= blockNumber) {
+        num ++;
+      }
+    }
+    
+    if (num == 0) {
+      console.log("No withdrawable request exist!");
+      process.exit(1);
+    }
+    console.log("Number of withdrawable requests is 2")
+
+    if (nonce) {
+      txObject.nonce = nonce;
+    }
+    await contract[ functionName ](...[ rootchain, num, true, txObject ]).then(JSON.stringify)
+      .then(console.log)
+      .catch(console.error);
   }
+  await process.exit(0);
 }
 
 main()
