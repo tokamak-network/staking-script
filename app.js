@@ -92,7 +92,7 @@ async function main() {
   } else if (functionName === 'requestWithdrawal') {
     const contractAddress = getConfig().contractAddress.managers.DepositManager;
     const contract = await loadContract(web3, 'DepositManager', contractAddress);
-    const rootchain = await getConfig().contractAddress.rootchain;
+    const layer2 = await getConfig().contractAddress.layer2;
     const txObject = {
       from,
       value: weiAmount,
@@ -105,13 +105,13 @@ async function main() {
     }
     const param = new BN(parameters[0]).toString();
 
-    await contract[ functionName ](...[ rootchain, param,
+    await contract[ functionName ](...[ layer2, param,
       txObject ]).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
   } else if (functionName === 'commit') {
-    const contractAddress = getConfig().contractAddress.rootchain;
-    const contract = await loadContract(web3, 'RootChain', contractAddress);
+    const contractAddress = getConfig().contractAddress.layer2;
+    const contract = await loadContract(web3, 'Layer2', contractAddress);
 
     const costNRB = await contract.COST_NRB();
     const NRELength = await contract.NRELength();
@@ -132,7 +132,7 @@ async function main() {
   } else if (functionName == 'redepositMulti') {
     const contractAddress = getConfig().contractAddress.managers.DepositManager;
     const contract = await loadContract(web3, 'DepositManager', contractAddress);
-    const rootchain = await getConfig().contractAddress.rootchain;
+    const layer2 = await getConfig().contractAddress.layer2;
     const txObject = {
       from,
       value: weiAmount,
@@ -140,33 +140,33 @@ async function main() {
       gasPrice,
     };
 
-    const numPendingRequests = await contract[ 'numPendingRequests' ](...[ rootchain, from] );
+    const numPendingRequests = await contract[ 'numPendingRequests' ](...[ layer2, from] );
     const num = new BN(numPendingRequests.toString())
 
     if (nonce) {
       txObject.nonce = nonce;
     }
 
-    await contract[ functionName ](...[ rootchain, num.words[0],
+    await contract[ functionName ](...[ layer2, num.words[0],
       txObject ]).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
   } else if (functionName == 'processRequests') {
     const contractAddress = getConfig().contractAddress.managers.DepositManager;
     const contract = await loadContract(web3, 'DepositManager', contractAddress);
-    const rootchain = await getConfig().contractAddress.rootchain;
+    const layer2 = await getConfig().contractAddress.layer2;
     const txObject = {
       from,
       value: weiAmount,
       gas: gasLimit,
       gasPrice,
     };
-    const numPendingRequests = await contract.numPendingRequests(rootchain, from)
+    const numPendingRequests = await contract.numPendingRequests(layer2, from)
 
-    let requestIndex = await contract.withdrawalRequestIndex(rootchain, from);
+    let requestIndex = await contract.withdrawalRequestIndex(layer2, from);
     const pendingRequests = [];
     for (const _ of range(numPendingRequests)) {
-      pendingRequests.push(contract.withdrawalRequest(rootchain, from, requestIndex));
+      pendingRequests.push(contract.withdrawalRequest(layer2, from, requestIndex));
       requestIndex++;
     }
     const requests = await Promise.all(pendingRequests);
@@ -188,7 +188,7 @@ async function main() {
     if (nonce) {
       txObject.nonce = nonce;
     }
-    await contract[ functionName ](...[ rootchain, num, true, txObject ]).then(JSON.stringify)
+    await contract[ functionName ](...[ layer2, num, true, txObject ]).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
   }
@@ -232,7 +232,7 @@ function marshalString (str) {
 
 function getData () {
   const data = marshalString(
-    [getConfig().contractAddress.managers.DepositManager, getConfig().contractAddress.rootchain]
+    [getConfig().contractAddress.managers.DepositManager, getConfig().contractAddress.layer2]
       .map(function (value, index) {
         if (value.slice(0, 2) === '0x') return value.slice(2);
         return value;
@@ -252,8 +252,8 @@ function getInfuraProviderUrl(networkId, infuraAccessToken) {
 }
 
 function loadContract(web3, contractName, contractAddress) {
-  if (contractName === 'RootChain') {
-    return loadTruffleContract(require('./contracts/RootChain.json'), web3.currentProvider, contractAddress);
+  if (contractName === 'Layer2') {
+    return loadTruffleContract(require('./contracts/Layer2.json'), web3.currentProvider, contractAddress);
   } else if (contractName === 'DepositManager') {
     return loadTruffleContract(require('./contracts/DepositManager.json'), web3.currentProvider, contractAddress);
   } else if (contractName === 'TON') {

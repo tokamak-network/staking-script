@@ -2,25 +2,28 @@ const config = {
   'mainnet': {
     'network': '1',
     'contractAddress': {
-      'rootchain': '',
+      'layer2': '',
       'managers': {
-        'DepositManager': '',
-        'TON': '',
-        'WTON': '',
+        "TON":"0x2be5e8c109e2197d077d13a82daead6a9b3433c5",
+        "WTON":"0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2",
+        "Layer2Registry":"0x0b3E174A2170083e770D5d4Cf56774D221b7063e",
+        "DepositManager":"0x56E465f654393fa48f007Ed7346105c7195CEe43",
+        "SeigManager":"0x710936500aC59e8551331871Cbad3D33d5e0D909",
+        "PowerTON":"0xd86d8950A4144D8a258930F6DD5f90CCE249E1CF"
       },
     },
   },
   'rinkeby': {
     'network': '4',
     'contractAddress': {
-      'rootchain': '0xfe40ecbd972675d3d6766d94d04373bf9d8896b6',
+      'rootchain': '0xe7d6E84c7791c1755b1BC6A13e783a39e25df33b',
       'managers': {
-        "TON":"0x3e136394a481f8c9595d63a1fa70d25c7f388c2c",
-        "WTON":"0x36bba598ca0b329eb4162ba011086d09111b4702",
-        "DepositManager":"0x95ff08f500ecb391778a3096ec767bdb18e17cf6",
-        "RootChainRegistry":"0x8dc9d372ebd9ed0d8f991226eaaf331ad11dbb4d",
-        "SeigManager":"0x32ccc91e3dd884090a580f45172c62393bd858c5",
-        "PowerTON":"0x4cc9b4cf3a4a6f8e7cadf8fcd442873c3f71ab73"
+        "TON":"0x3734E35231abE68818996dC07Be6a8889202DEe9",
+        "WTON":"0xe1e1dDC0998CFB25f0a69C8AE5D0C71C5c193dE9",
+        "RootChainRegistry":"0x9cEeBe2A59df4D21B2b4834b55aE9EEb233e7ad8",
+        "DepositManager":"0x7bFeD43723bB67CE28e02298944119Ac9Af1da7B",
+        "SeigManager":"0x97B1c1e71290304fCb404fF1ed356DbedDFa48a6",
+        "PowerTON":"0x70495711c46c902Be24941effDc2b05974811f4B"
       },
     },
   },
