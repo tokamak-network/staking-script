@@ -31,5 +31,5 @@ const config = {
 
 exports.getConfig = function () {
   
-  return config.rinkeby;
+  return config.mainnet;
 }
