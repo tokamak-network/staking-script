@@ -16,14 +16,14 @@ const config = {
   'rinkeby': {
     'network': '4',
     'contractAddress': {
-      'rootchain': '0xe7d6E84c7791c1755b1BC6A13e783a39e25df33b',
+      'layer2': '0x4B2ca992AcE7D770D9f9A0c3eEEc9711059BE474',
       'managers': {
-        "TON":"0x3734E35231abE68818996dC07Be6a8889202DEe9",
-        "WTON":"0xe1e1dDC0998CFB25f0a69C8AE5D0C71C5c193dE9",
-        "RootChainRegistry":"0x9cEeBe2A59df4D21B2b4834b55aE9EEb233e7ad8",
-        "DepositManager":"0x7bFeD43723bB67CE28e02298944119Ac9Af1da7B",
-        "SeigManager":"0x97B1c1e71290304fCb404fF1ed356DbedDFa48a6",
-        "PowerTON":"0x70495711c46c902Be24941effDc2b05974811f4B"
+        "TON":"0x44d4F5d89E9296337b8c48a332B3b2fb2C190CD0",
+        "WTON":"0x709bef48982Bbfd6F2D4Be24660832665F53406C",
+        "Layer2Registry":"0xA609Cb2b9b0A4845077D2C965B7C6DFE5F59c847",
+        "DepositManager":"0x57F5CD759A5652A697D539F1D9333ba38C615FC2",
+        "SeigManager":"0x957DaC3D3C4B82088A4939BE9A8063e20cB2efBE",
+        "PowerTON":"0x72bc526739e5Af59443d72F396ae04d15Df5Ef83"
       },
     },
   },

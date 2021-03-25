@@ -1,17 +1,24 @@
 {
   "name": "staking-script",
   "version": "1.0.0",
-  "description": "",
+  "description": "To run staking script, follow the step.",
   "main": "app.js",
   "directories": {
-    "lib": "lib",
-    "test": "test"
+    "lib": "lib"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Onther-Tech/staking-script.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Onther-Tech/staking-script/issues"
+  },
+  "homepage": "https://github.com/Onther-Tech/staking-script#readme",
   "dependencies": {
     "commander": "^5.1.0",
     "dotenv": "^8.2.0",

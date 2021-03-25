@@ -113,11 +113,11 @@ async function main() {
     const contractAddress = getConfig().contractAddress.layer2;
     const contract = await loadContract(web3, 'Layer2', contractAddress);
 
-    const costNRB = await contract.COST_NRB();
-    const NRELength = await contract.NRELength();
-    const currentForkNumber = await contract.currentFork();
+    const costNRB = await contract.methods.COST_NRB().call();
+    const NRELength = await contract.methods.NRELength().call();
+    const currentForkNumber = await contract.methods.currentFork().call();
 
-    const fork = await contract.forks(currentForkNumber);
+    const fork = await contract.methods.forks(currentForkNumber).call();
     const epochNumber = parseInt(fork.lastEpoch) + 1;
     const startBlockNumber = parseInt(fork.lastBlock) + 1;
     const endBlockNumber = parseInt(startBlockNumber) + parseInt(NRELength) - 1;
@@ -126,7 +126,8 @@ async function main() {
     const pos2 = makePos(startBlockNumber, endBlockNumber);
     const dummyBytes = '0xdb431b544b2f5468e3f771d7843d9c5df3b4edcf8bc1c599f18f0b4ea8709bc3';
 
-    await contract.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes, {from: from, value: costNRB}).then(JSON.stringify)
+    await contract.methods.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes).send({from: from, value: costNRB})
+    .then(JSON.stringify)
     .then(console.log)
     .catch(console.error);
   } else if (functionName == 'redepositMulti') {
@@ -253,7 +254,7 @@ function getInfuraProviderUrl(networkId, infuraAccessToken) {
 
 function loadContract(web3, contractName, contractAddress) {
   if (contractName === 'Layer2') {
-    return loadTruffleContract(require('./contracts/Layer2.json'), web3.currentProvider, contractAddress);
+    return new web3.eth.Contract(require('./contracts/Layer2.json'), contractAddress);
   } else if (contractName === 'DepositManager') {
     return loadTruffleContract(require('./contracts/DepositManager.json'), web3.currentProvider, contractAddress);
   } else if (contractName === 'TON') {
