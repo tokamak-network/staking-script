@@ -126,10 +126,22 @@ async function main() {
     const pos2 = makePos(startBlockNumber, endBlockNumber);
     const dummyBytes = '0xdb431b544b2f5468e3f771d7843d9c5df3b4edcf8bc1c599f18f0b4ea8709bc3';
 
-    await contract.methods.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes).send({from: from, value: costNRB})
+    const gasLimit = await contract.methods.submitNRE(
+      pos1,
+      pos2,
+      dummyBytes, // epochStateRoot
+      dummyBytes, // epochTransactionsRoot
+      dummyBytes, // epochReceiptsRoot
+    ).estimateGas({
+      from: from,
+      value: costNRB,
+    });
+
+    await contract.methods.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes).send({from: from, value: costNRB, gasLimit: Math.floor(gasLimit * 1.2)})
     .then(JSON.stringify)
     .then(console.log)
     .catch(console.error);
+
   } else if (functionName == 'redepositMulti') {
     const contractAddress = getConfig().contractAddress.managers.DepositManager;
     const contract = await loadContract(web3, 'DepositManager', contractAddress);
