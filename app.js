@@ -104,11 +104,17 @@ async function main() {
       txObject.nonce = nonce;
     }
     const param = new BN(parameters[0]).toString();
+    const gasLimit = await contract.methods.requestWithdrwal(...[ layer2, param, txObject ]).estimateGas({from: from});
 
-    await contract[ functionName ](...[ layer2, param,
-      txObject ]).then(JSON.stringify)
+    await contract.methods.requestWithdrwal(...[ layer2, param, txObject ])
+      .send({
+        from: from,
+        gasLimit: Math.floor(gasLimit * 1.2)
+      })
+      .then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
+
   } else if (functionName === 'commit') {
     const contractAddress = getConfig().contractAddress.layer2;
     const contract = await loadContract(web3, 'Layer2', contractAddress);
@@ -137,7 +143,12 @@ async function main() {
       value: costNRB,
     });
 
-    await contract.methods.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes).send({from: from, value: costNRB, gasLimit: Math.floor(gasLimit * 1.2)})
+    await contract.methods.submitNRE(pos1, pos2, dummyBytes, dummyBytes, dummyBytes)
+    .send({
+      from: from,
+      value: costNRB,
+      gasLimit: Math.floor(gasLimit * 1.2)
+    })
     .then(JSON.stringify)
     .then(console.log)
     .catch(console.error);
@@ -153,7 +164,7 @@ async function main() {
       gasPrice,
     };
 
-    const numPendingRequests = await contract[ 'numPendingRequests' ](...[ layer2, from] );
+    const numPendingRequests = await contract.methods.numPendingRequests(layer2, from).call();
     const num = new BN(numPendingRequests.toString())
 
     if (nonce) {
@@ -174,12 +185,12 @@ async function main() {
       gas: gasLimit,
       gasPrice,
     };
-    const numPendingRequests = await contract.numPendingRequests(layer2, from)
+    const numPendingRequests = await contract.methods.numPendingRequests(layer2, from).call();
 
-    let requestIndex = await contract.withdrawalRequestIndex(layer2, from);
+    let requestIndex = await contract.methods.withdrawalRequestIndex(layer2, from).call();
     const pendingRequests = [];
     for (const _ of range(numPendingRequests)) {
-      pendingRequests.push(contract.withdrawalRequest(layer2, from, requestIndex));
+      pendingRequests.push(await contract.methods.withdrawalRequest(layer2, from, requestIndex).call());
       requestIndex++;
     }
     const requests = await Promise.all(pendingRequests);
@@ -201,7 +212,9 @@ async function main() {
     if (nonce) {
       txObject.nonce = nonce;
     }
-    await contract[ functionName ](...[ layer2, num, true, txObject ]).then(JSON.stringify)
+    const gasLimit = await contract.methods.processRequests(layer2, num, true).estimateGas();
+
+    await contract.methods.processRequests(layer2, num, true).send({from: from}).then(JSON.stringify)
       .then(console.log)
       .catch(console.error);
   }
@@ -268,9 +281,9 @@ function loadContract(web3, contractName, contractAddress) {
   if (contractName === 'Layer2') {
     return new web3.eth.Contract(require('./contracts/Layer2.json'), contractAddress);
   } else if (contractName === 'DepositManager') {
-    return loadTruffleContract(require('./contracts/DepositManager.json'), web3.currentProvider, contractAddress);
+    return new web3.eth.Contract(require('./contracts/DepositManager.json'), contractAddress);
   } else if (contractName === 'TON') {
-    return loadTruffleContract(require('./contracts/TON.json'), web3.currentProvider, contractAddress);
+    return new web3.eth.Contract(require('./contracts/TON.json'), contractAddress);
   }
 
   throw new Error(`Unspecified contract name ${ contractName }`);
